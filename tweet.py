@@ -43,8 +43,9 @@ def filewrite(strem,tweetid):
             pass
     file.close()
     #return tweetitself
-ur = ur()
+
 def work():
+
     z = input('Time to watch in sec: ')
     file = open('name.json','w')
     file.close()
@@ -56,5 +57,5 @@ def work():
         time.sleep(5)
         coun +=1
     print "Your file has been saved"
-
+ur = ur()
 work()
