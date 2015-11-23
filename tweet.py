@@ -1,45 +1,60 @@
- # -*- coding: utf-8 -*-
- 
+# -*- coding: utf-8 -*-
+
 import oauth2
 import json
 import httplib2
+from auth import *
+import time
+import sys
 
-tweeturl = 'https://api.twitter.com/1.1/search/tweets.json?q=asd&count=100&locale=ua'
-authsecr = "4A4sePR2HorfqT5DXTph7NOrqzqkU0kQbeaUcrTs4Nh2KI6aOS"
-authkey = "Y2W7ofIwUhV8X6c9YnASKoTHZ"
-tokenkey = '2330051484-z3UMoyMg3BoEQMsVQeCzVyzdyhbgamwuXYEff0O'
-tokensecret = 'gkglDuRt1fOBAxpH6jQB91qnH9E6QdyXDQRLTQ9m8deLi'
-proxy = httplib2.ProxyInfo(3, '127.0.0.1', 8888) #HTTP Proxy Type (3)
 
+def ur():
+    tweetword = str(raw_input('Choose word to search: '))
+    locale_user = str(raw_input('Choose locale: '))
+    if len(locale_user) <=2:
+        locale_user = 'ua'
+
+    tweeturl = 'https://api.twitter.com/1.1/search/tweets.json?q='+tweetword+'&count=100&locale='+ locale_user
+    return tweeturl
 
 def oauth_req(url, key, secret, http_method="GET", post_body="", http_headers=None):
-    lenn=0
-    minlen = 0
     consumer = oauth2.Consumer(key=authkey, secret=authsecr)
     token = oauth2.Token(key=key, secret=secret)
     client = oauth2.Client(consumer, token)
-    client.proxy_info = proxy
-    client.disable_ssl_certificate_validation = True
+
     resp, content = client.request( url, method=http_method, body=post_body, headers=http_headers )
-    file = open('list.json','w')
-    file.write(content)
-    file.close()
-    file = open('list222.json','w')
-    with open('list.json') as data_file:    
-        data = json.load(data_file)
-    for item in data['statuses']:
-        if len(item [u'user'][u'screen_name']) > lenn:
-            lenn = len(item [u'user'][u'screen_name'])
+    return content
+
+
+def filewrite(strem,tweetid):
+    file = open('name.json','a')
+    for item in strem['statuses']:
+        id = str(item['id'])+'L'
+        if id not in tweetid:
+            tweetid.append(id)
+            tweetitself = 'User '+item['user']['screen_name'].encode('utf8')+ ' posted ' \
+                        + item['text'].encode('utf8')+\
+                        ' at '+item ['created_at'].encode('utf8')+'\n'+'_'*80 +'\n'
+            file.write(tweetitself)
+            print tweetitself
+            print '_'*80 +'\n'
+
         else:
-            minlen = lenn - len(item [u'user'][u'screen_name'])
-        file.write(str(item [u'id'])+ ' ' +  item [u'user'][u'screen_name'] + (' ' * (minlen+1)) + item [u'created_at'] +'\n')
-        print str(item [u'id'])+ ' ' +  item [u'user'][u'screen_name']
+            pass
     file.close()
-    #print str(item [u'id'])+ ' ' + 
-    #userId.append(str(resp_body[u'statuses']))
-    #print resp_body
-    #print client.proxy_info()
- 
-home_timeline = oauth_req(tweeturl, tokenkey, tokensecret)
+    #return tweetitself
+ur = ur()
+def work():
+    z = input('Time to watch in sec: ')
+    file = open('name.json','w')
+    file.close()
+    tweetid = []
+    coun = 0
+    while  coun <= z:
+        co = json.loads(oauth_req(ur, tokenkey, tokensecret))
+        filewrite(co,tweetid)
+        time.sleep(5)
+        coun +=1
+    print "Your file has been saved"
 
-
+work()
